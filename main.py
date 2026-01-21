@@ -99,3 +99,12 @@ def update_task(task_id: int, **kwargs) -> dict | None:
     
     print(f"✅ Задача #{task_id} успешно обновлена")
     return task_updateing
+
+def delete_task(task_id: int) -> bool:
+    task = get_task_by_id(task_id)
+    if task:
+        tasks.pop(tasks.index(task))
+        print("✅ Задача с ID 1 удалена")
+        return True
+    print(f"❌ Задача с ID {task_id} не найдена")
+    return False  
