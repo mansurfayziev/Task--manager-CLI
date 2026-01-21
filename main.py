@@ -1,6 +1,7 @@
 tasks = []
 task_id_counter = 1
 VALID_PRIORITIES = ("low", "medium", "high")
+VALID_STATUSES = ("pending", "in_progress", "completed")
 
 def create_task(title: str, description: str ='', priority: str ="medium") -> dict | None:
     """
@@ -61,8 +62,40 @@ def get_task_by_id(task_id: int) -> dict | None:
     for task in tasks:
         if task["id"] == task_id:
             return task
-    print(f"❌ Задача с ID {task_id} не найдена")
+    print(f"❌ Ошибка: задача с ID {task_id} не найдена")
     return None
 
 def update_task(task_id: int, **kwargs) -> dict | None:
-    print("hello git!")
+    # **kwargs: Поля для обновления (title, description, status, priority).
+
+    task = get_task_by_id(task_id)
+    if task is None:
+        return None
+    task_updateing = task.copy()
+    for key, value in kwargs.items():
+        if key=="title":
+            if value is None or str(value).strip() == "":
+                print("❌ Ошибка: название задачи не может быть пустым")
+                return None  
+            task_updateing[key] = value
+
+        if key=="description" and value:
+            task_updateing[key] = value
+
+        if key=="status":
+            value=value.lower()
+            if not value in VALID_STATUSES:
+                print(f"❌ Статус задача должна быть {VALID_STATUSES}")
+                return None
+            task_updateing[key] = value
+
+        if key=="priority":
+            value=value.lower()
+            if not value in VALID_PRIORITIES:
+                print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
+                return None
+            task_updateing[key] = value
+    tasks[tasks.index(task)] = task_updateing
+    
+    print(f"✅ Задача #{task_id} успешно обновлена")
+    return task_updateing
