@@ -21,7 +21,7 @@ def create_task(title: str, description: str ='', priority: str ="medium") -> di
         print("❌ Ошибка: название задачи не может быть пустым")
         return None
     priority = priority.lower()
-    if not priority in VALID_PRIORITIES:
+    if priority not in VALID_PRIORITIES:
         print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
         return None
     
@@ -54,7 +54,7 @@ def get_all_tasks(status: str='') -> list:
     """
     if not status:
         return tasks
-    status=status.lower()
+    if status: status=status.lower()
     return  [task for task in tasks if task["status"] == status] 
 
      
@@ -79,7 +79,7 @@ def update_task(task_id: int, **kwargs) -> dict | None:
                 return None  
             task_updateing[key] = value
 
-        if key=="description" and value:
+        if key=="description":
             task_updateing[key] = value
 
         if key=="status":
@@ -104,7 +104,33 @@ def delete_task(task_id: int) -> bool:
     task = get_task_by_id(task_id)
     if task:
         tasks.pop(tasks.index(task))
-        print("✅ Задача с ID 1 удалена")
+        print(f"✅ Задача с ID {task_id} удалена")
         return True
     print(f"❌ Задача с ID {task_id} не найдена")
     return False  
+
+def filter_tasks(**filters) -> list:
+    # **filters: Фильтры (status, priority).
+    status = filters.get("status", None)
+    priority = filters.get("priority", None)
+    if not status and not priority:
+        return tasks
+    
+    if status: 
+        status = str(status).lower().strip()
+        if not status in VALID_STATUSES:
+            print(f"❌ Статус задачи должен быть {VALID_STATUSES}")
+            return []
+    if priority:
+        priority = str(priority).lower().strip()
+        if not priority in VALID_PRIORITIES:
+            print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
+            return []
+    if status and priority:
+        return [task for task in tasks if task["status"]==status and task["priority"]==priority]
+    elif status:
+        return [task for task in tasks if task["status"]==status]
+    elif priority:
+        return [task for task in tasks if task["priority"]==priority]
+    else:
+        return tasks
