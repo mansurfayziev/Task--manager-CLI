@@ -134,3 +134,13 @@ def filter_tasks(**filters) -> list:
         return [task for task in tasks if task["priority"]==priority]
     else:
         return tasks
+
+def search_tasks(query: str) -> list:
+    query = query.lower()
+    result =[]
+    for task in tasks:
+        if query in task["title"].lower() or query in task["description"].lower():
+            result.append(task)
+
+    return result
+
