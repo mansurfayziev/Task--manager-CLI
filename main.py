@@ -57,7 +57,7 @@ def get_all_tasks(status: str='') -> list:
     """
     if not status:
         return tasks
-    if status: status=status.lower()
+    status=status.lower()
     return  [task for task in tasks if task["status"] == status] 
 
      
@@ -82,22 +82,24 @@ def update_task(task_id: int, **kwargs) -> dict | None:
                 return None  
             task_updateing[key] = value
 
-        if key=="description":
+        elif key=="description":
             task_updateing[key] = value
 
-        if key=="status":
+        elif key=="status":
             value=value.lower()
             if not value in VALID_STATUSES:
                 print(f"❌ Статус задача должна быть {VALID_STATUSES}")
                 return None
             task_updateing[key] = value
 
-        if key=="priority":
+        elif key=="priority":
             value=value.lower()
             if not value in VALID_PRIORITIES:
                 print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
                 return None
             task_updateing[key] = value
+        else:
+            print(f"⚠️ Неизвестное поле: {key}") 
     tasks[tasks.index(task)] = task_updateing
     
     print(f"✅ Задача #{task_id} успешно обновлена")
@@ -149,18 +151,14 @@ def search_tasks(query: str) -> list:
 
 def sort_tasks(by: str = "id", reverse:bool = False) -> list:
     if by.lower()=="id":
-        if reverse:
-            return sorted(tasks, key=lambda t: t["id"], reverse=True)
-        return sorted(tasks, key=lambda t: t["id"])
-    if by.lower()=="priority":
-        if reverse:
-            return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]], reverse=True)
-        return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]])
-    if by.lower()=="status":
-        if reverse:
-            return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]], reverse=True)
-        return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]])
-    return []
+        return sorted(tasks, key=lambda t: t["id"], reverse=reverse)
+    elif by.lower()=="priority":
+        return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]], reverse=reverse)
+    elif by.lower()=="status":
+        return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]], reverse=reverse)
+    else:
+        print(f"⚠️ Неизвестное поле для сортировки: {by}")
+        return tasks
 
 
 
