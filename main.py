@@ -2,6 +2,9 @@ tasks = []
 task_id_counter = 1
 VALID_PRIORITIES = ("low", "medium", "high")
 VALID_STATUSES = ("pending", "in_progress", "completed")
+PRIORITY_ORDER = {"high": 1, "medium": 2, "low": 3}
+STATUS_ORDER = {"pending": 1, "in_progress": 2, "completed": 3}
+
 
 def create_task(title: str, description: str ='', priority: str ="medium") -> dict | None:
     """
@@ -143,4 +146,21 @@ def search_tasks(query: str) -> list:
             result.append(task)
 
     return result
+
+def sort_tasks(by: str = "id", reverse:bool = False) -> list:
+    if by.lower()=="id":
+        if reverse:
+            return sorted(tasks, key=lambda t: t["id"], reverse=True)
+        return sorted(tasks, key=lambda t: t["id"])
+    if by.lower()=="priority":
+        if reverse:
+            return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]], reverse=True)
+        return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]])
+    if by.lower()=="status":
+        if reverse:
+            return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]], reverse=True)
+        return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]])
+    return []
+
+
 
