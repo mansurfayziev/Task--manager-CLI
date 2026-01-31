@@ -12,7 +12,7 @@ from models.task import (
 )
 
 
-def create_task(title: str, description: str ='', priority: str ="medium") -> dict | None:
+def create_task(title: str, description: str ='', priority: str ="medium") -> tuple[dict | None, str | None]:
     """
     Создание новой задачи.
     
@@ -22,70 +22,78 @@ def create_task(title: str, description: str ='', priority: str ="medium") -> di
         priority (str): Приоритет: 'low', 'medium', 'high' (без учёта регистра).
     
     Returns:
-        dict | None: Словарь с данными задачи или None при ошибке валидации.
+        tuple[dict | None, str | None]: (задача, сообщение_об_ошибке)
+        - (task_dict, None) при успехе
+        - (None, error_message) при ошибке 
     """
     global task_id_counter
     
-    if not title:
-        print("❌ Ошибка: название задачи не может быть пустым")
-        return None
-    priority = priority.lower()
+    if not title or not title.strip():
+        return None, "Название задачи не может быть пустым"
+    priority = priority.strip().lower()
     if priority not in VALID_PRIORITIES:
-        print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
-        return None
+        return None, f"Приоритет должен быть один из: {', '.join(VALID_PRIORITIES)}"
     
     task_id = task_id_counter
     task_id_counter += 1
     new_task = {
         "id": task_id, 
-        "title": title,
-        "description": description,
+        "title": title.strip(),
+        "description": description.strip(),
         "status": "pending", 
         "priority": priority
     }
  
     tasks.append(new_task)
-    return new_task
+    return new_task , None
 
-def get_all_tasks(status: str='') -> list:
+def get_all_tasks() -> list:
     """
     Получение списка всех задач.
-    Args:
-        status (str): Фильтр по статусу (опционально). 
-                      Например: 'pending', 'completed'.
+
     Returns:
         list: Список задач (словарей). Пустой список, если задач нет.
-    Examples:
-        >>> get_all_tasks()
-        [{'id': 1, ...}, {'id': 2, ...}]
-        >>> get_all_tasks(status='pending')
-        [{'id': 1, 'status': 'pending', ...}]
     """
-    if not status:
-        return tasks
-    status=status.lower()
-    return  [task for task in tasks if task["status"] == status] 
+    return  tasks 
 
      
 def get_task_by_id(task_id: int) -> dict | None:
+    """
+    Получение задача по ID.
+    Args:
+        id (int): ID задача (обязательно).
+
+    Returns:
+        dict: Задача (словарь). None, если задач нет.
+    """
     for task in tasks:
         if task["id"] == task_id:
             return task
-    print(f"❌ Ошибка: задача с ID {task_id} не найдена")
     return None
 
-def update_task(task_id: int, **kwargs) -> dict | None:
+def update_task(task_id: int, **kwargs) -> tuple[dict | None, str | None]:
+    """
+    Обновление задач.
+    
+    Args:
+        id (int): ID задача (обязательно).
+        **kwargs: Поля для обновления (title, description, status, priority).
+    
+    Returns:
+        tuple[dict | None, str | None]: (Словарь с данными обновленая задача, сообщение_об_ошибке)
+        - (task_dict, None) при успехе
+        - (None, error_message) при ошибке 
+    """
     # **kwargs: Поля для обновления (title, description, status, priority).
 
     task = get_task_by_id(task_id)
     if task is None:
-        return None
+        return None , f"Задача с ID {task_id} не найдена"
     task_updateing = task.copy()
     for key, value in kwargs.items():
         if key=="title":
-            if value is None or str(value).strip() == "":
-                print("❌ Ошибка: название задачи не может быть пустым")
-                return None  
+            if value is None or value.strip():
+                return None, "Название задачи не может быть пустым"  
             task_updateing[key] = value
 
         elif key=="description":
@@ -94,58 +102,72 @@ def update_task(task_id: int, **kwargs) -> dict | None:
         elif key=="status":
             value=value.lower()
             if not value in VALID_STATUSES:
-                print(f"❌ Статус задача должна быть {VALID_STATUSES}")
-                return None
+                return None, f"Статус задача должна быть  {VALID_STATUSES}"
             task_updateing[key] = value
 
         elif key=="priority":
             value=value.lower()
             if not value in VALID_PRIORITIES:
-                print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
-                return None
+                return None, f"Приоритет должен быть {VALID_PRIORITIES}"
             task_updateing[key] = value
-        else:
-            print(f"⚠️ Неизвестное поле: {key}") 
+        
     tasks[tasks.index(task)] = task_updateing
     
-    print(f"✅ Задача #{task_id} успешно обновлена")
-    return task_updateing
+    return task_updateing, None
 
-def delete_task(task_id: int) -> bool:
-    task = get_task_by_id(task_id)
-    if task:
-        tasks.pop(tasks.index(task))
-        print(f"✅ Задача с ID {task_id} удалена")
-        return True
-    return False  
+def delete_task(task_id: int) -> tuple[bool, str | None]:
+    """
+    Удаление задача.
+    
+    Args:
+        id (int): ID задача (обязательно).
+    
+    Returns:
+        tuple[bool, str | None]:
+         - (True, None) при успехе
+         - (False, сообщение_об_ошибке) при ошибке
+    """
+    for index, task in enumerate(tasks):
+        if task["id"]==task_id:
+            tasks.pop(index)
+            return True, None
+    return False, f"Задача с ID {task_id} не найдена"
 
 def filter_tasks(**filters) -> list:
+    """
+    Фильтрация задач.
+    
+    Args:
+        **filters: Фильтры (status, priority).
+    
+    Returns:
+        list: Список с отфильтированними задач.
+    """
     # **filters: Фильтры (status, priority).
     status = filters.get("status", None)
     priority = filters.get("priority", None)
     if not status and not priority:
         return tasks
     
-    if status: 
-        status = str(status).lower().strip()
-        if not status in VALID_STATUSES:
-            print(f"❌ Статус задачи должен быть {VALID_STATUSES}")
-            return []
-    if priority:
-        priority = str(priority).lower().strip()
-        if not priority in VALID_PRIORITIES:
-            print(f"❌ Ошибка: приоритет должен быть {VALID_PRIORITIES}")
-            return []
     if status and priority:
         return [task for task in tasks if task["status"]==status and task["priority"]==priority]
     elif status:
         return [task for task in tasks if task["status"]==status]
     elif priority:
         return [task for task in tasks if task["priority"]==priority]
-    else:
-        return tasks
+    
 
 def search_tasks(query: str) -> list:
+    """
+    Поиск задач.
+    
+    Args:
+        query (str): Фраза или слово (обязательно).
+    
+    Returns:
+        list: Список задач содержающий ищемий слов.
+    """
+    
     query = query.lower()
     result =[]
     for task in tasks:
@@ -154,16 +176,28 @@ def search_tasks(query: str) -> list:
 
     return result
 
-def sort_tasks(by: str = "id", reverse:bool = False) -> list:
+def sort_tasks(by: str = "id", reverse:bool = False) -> tuple[list, str | None]:
+    """
+    Сортировка задач
+    
+    Args:
+        by (str): Сортируемий поля (обязательно).
+        reverse (bool): Обратный упрядок.
+    
+    Returns:
+        tuple[list, str | None]: (задачи, сообщение_об_ошибке)
+        - (sorted_tasks, None) при успехе
+        - (tasks, error_message) при неверном поле
+    """
+
     if by.lower()=="id":
-        return sorted(tasks, key=lambda t: t["id"], reverse=reverse)
+        return sorted(tasks, key=lambda t: t["id"], reverse=reverse), None
     elif by.lower()=="priority":
-        return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]], reverse=reverse)
+        return sorted(tasks, key=lambda t: PRIORITY_ORDER[t["priority"]], reverse=reverse), None
     elif by.lower()=="status":
-        return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]], reverse=reverse)
+        return sorted(tasks, key=lambda t: STATUS_ORDER[t["status"]], reverse=reverse), None
     else:
-        print(f"⚠️ Неизвестное поле для сортировки: {by}")
-        return tasks
+        return tasks, f"Неверное поле для сортировки: {by}"
 
 
 

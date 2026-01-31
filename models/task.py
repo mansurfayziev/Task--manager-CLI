@@ -1,5 +1,5 @@
 """
-Модель данных для задач и конфигурацияю
+Модель данных для задач и конфигурация.
 """
 tasks = []
 task_id_counter = 1
@@ -12,7 +12,7 @@ VALID_STATUSES = ("pending", "in_progress", "completed")
 PRIORITY_ORDER = {"high": 1, "medium": 2, "low": 3}
 STATUS_ORDER = {"pending": 1, "in_progress": 2, "completed": 3}
 
-# оторажение (for CLI)
+# Отображение (для CLI)
 STATUS_DISPLAY = {
     "pending": {"emoji": "⏳", "name": "Ожидает"},
     "in_progress": {"emoji": "🔄", "name": "В работе"},
