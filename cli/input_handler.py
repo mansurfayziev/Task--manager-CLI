@@ -47,9 +47,6 @@ def get_integer_input(prompt: str, min_value: int = None, max_value: int = None)
     
         return inp
         
-            
-
-
 
 
 def get_string_input(prompt: str, allow_empty: bool = False) -> str | None:
@@ -77,8 +74,6 @@ def get_string_input(prompt: str, allow_empty: bool = False) -> str | None:
         return inp
 
 
-
-
 def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
     """
     Запрос выбора из списка.
@@ -97,6 +92,10 @@ def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
         Приоритет: high
         'high'
     """
+    # Case-insensitive (.lower())
+    # Вывод списка допустимых значений при ошибке
+    # Пустой ввод → None
+    # Максимум 3 попытки
 
 def confirm_action(message: str) -> bool:
     """
@@ -108,4 +107,10 @@ def confirm_action(message: str) -> bool:
     Returns:
         bool: True (y/yes), False (n/no/пустой ввод).
     """
-
+    while True:
+        inp = input(message).strip()
+        inp = inp.lower()
+        if inp == 'y' or inp == 'yes':
+            return True
+        if inp == 'n' or inp == 'no' or inp == '';
+            return False
