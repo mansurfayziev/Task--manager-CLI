@@ -47,3 +47,55 @@
            └───────────────┘
 
 ```
+# Формат:
+<type>(<scope>): <description> (#issue)
+
+# Примеры:
+feat(display): add display_header function (#3)
+fix(input): handle empty input in get_integer_input (#4)
+refactor(service): simplify filter_tasks logic (#2)
+docs(readme): add installation instructions (#15)
+test(service): add tests for create_task (#14)
+```
+
+**Types:**
+- `feat` - новая функция
+- `fix` - исправление бага
+- `refactor` - рефакторинг (без изменения функциональности)
+- `docs` - документация
+- `test` - тесты
+- `chore` - рутинные задачи (настройка, зависимости)
+
+---
+
+## 📊 ROADMAP (GitHub Project View)
+
+### **Week 1: MVP** ✅
+```
+Day 1-2: Issues #1, #2  (Models + Services)
+Day 3-4: Issues #3, #4  (Display + Input)
+Day 5-6: Issues #5, #6  (Menu + Main)
+Day 7: Тестирование MVP
+```
+
+### **Week 2: Extended Features** 🔥
+```
+Day 1: Issue #7  (Update menu)
+Day 2: Issue #8  (Search menu)
+Day 3: Issue #9  (Filter menu)
+Day 4: Issue #10 (Sort menu)
+Day 5-7: Полное тестирование
+```
+
+### **Week 3: Persistence** 💾
+```
+Day 1-2: Issue #11 (File manager)
+Day 3: Issue #12 (Integration)
+Day 4-7: Тестирование с JSON
+```
+
+### **Week 4: Quality** ⭐
+```
+Day 1-2: Issue #13 (Refactoring)
+Day 3-4: Issue #14 (Testing)
+Day 5-7: Issue #15 (Docs)
