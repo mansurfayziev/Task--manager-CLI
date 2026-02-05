@@ -49,12 +49,7 @@ def get_integer_input(prompt: str, min_value: int = None, max_value: int = None)
         
             
 
-# try/except ValueError для обработки нечисловых вводов
-# Проверка диапазона (min_value, max_value)
-# Пустой ввод (Enter) → вернуть None
-# Максимум 3 попытки, потом вернуть None
-# Повторный запрос при ошибке
-    
+
 
 
 def get_string_input(prompt: str, allow_empty: bool = False) -> str | None:
@@ -68,6 +63,21 @@ def get_string_input(prompt: str, allow_empty: bool = False) -> str | None:
     Returns:
         str | None: Введённая строка или None.
     """
+
+    for x in range(3):
+        inp = input(prompt).strip()
+
+        if allow_empty == False and inp == '':
+            print("❌ Ошибка: поле не может быть пустым") 
+            continue
+
+        if inp == '':
+            return None
+        
+        return inp
+
+
+
 
 def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
     """
