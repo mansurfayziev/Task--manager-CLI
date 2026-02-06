@@ -92,10 +92,7 @@ def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
         Приоритет: high
         'high'
     """
-    # Case-insensitive (.lower())
-    # Вывод списка допустимых значений при ошибке
-    # Пустой ввод → None
-    # Максимум 3 попытки
+
 
     for x in range(3):
         inp = input(prompt).lower().strip()
@@ -106,9 +103,6 @@ def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
                 return inp
         print(f"❌ Ошибка: выберите из: {valid_choices}")
     
-
-
-
 
 def confirm_action(message: str) -> bool:
     """
