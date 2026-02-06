@@ -97,6 +97,19 @@ def get_choice_input(prompt: str, valid_choices: tuple) -> str | None:
     # Пустой ввод → None
     # Максимум 3 попытки
 
+    for x in range(3):
+        inp = input(prompt).lower().strip()
+        if inp == '':
+            return None
+        for valid_choice in valid_choices:
+            if inp == valid_choice:
+                return inp
+        print(f"❌ Ошибка: выберите из: {valid_choices}")
+    
+
+
+
+
 def confirm_action(message: str) -> bool:
     """
     Запрос подтверждения действия.
@@ -112,5 +125,5 @@ def confirm_action(message: str) -> bool:
         inp = inp.lower()
         if inp == 'y' or inp == 'yes':
             return True
-        if inp == 'n' or inp == 'no' or inp == '';
+        if inp == 'n' or inp == 'no' or inp == '':
             return False
